@@ -15,7 +15,7 @@ class Comprador(db.Model):
     com_id = db.Column(db.Integer, primary_key=True)
     com_name = db.Column(db.String(255), nullable=False)
     com_address = db.Column(db.String(255), nullable=False)
-    # com_telefono = db.Column(db.String(20), nullable=False)
+    com_telefono = db.Column(db.String(20), nullable=False)
     com_dni = db.Column(db.String(10), nullable=False)
 
     com_compras = db.relationship("Venta", backref="comprador", lazy="dynamic")
