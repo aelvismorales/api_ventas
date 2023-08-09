@@ -4,7 +4,7 @@ CORS_CONFIG = {"resources": {"/*": {"origins": "*"}}}
 
 
 class Config:
-    SERVERNAME = "localhost:5000"
+    # SERVERNAME = "localhost:5000"
     DEBUG = False
     TESTING = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
