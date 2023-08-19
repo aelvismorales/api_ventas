@@ -72,14 +72,7 @@ class Comprador(db.Model):
 
 class CompradorSquema(ma.SQLAlchemySchema):
     class Meta:
-        fields = (
-            "com_id",
-            "com_name",
-            "com_address",
-            "com_telefono",
-            "com_dni",
-            "com_compras",
-        )
+        fields = ("com_id", "com_name", "com_address", "com_telefono", "com_dni")
 
 
 detalle_venta = db.Table(
@@ -238,4 +231,4 @@ class Venta(db.Model):
 
 class VentaSquema(ma.SQLAlchemySchema):
     class Meta:
-        fields = ("ven_id", "ven_date", "vent_tipo", "comp_id", "productos")
+        fields = ("ven_id", "ven_date", "ven_tipo", "comp_id", "ven_address")

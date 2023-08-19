@@ -30,7 +30,7 @@ def crear_venta():
             "productos": [
                             {
                                 "pr_id": 3,
-                                "pr_quantity": "100.00",
+                                "quantity": "100.00",
                                 "discount": "10.20"
                             },
                             {
@@ -164,7 +164,7 @@ def buscar_ventas(com_name):
     """
     busqueda = com_name.replace("_", " ").upper()
     if not busqueda:
-        return jsonify({"message": "Debes proporcionar el nombre del comprador"}), 400
+        return jsonify({"message": "Debes proporcionar el nombre del comprador"}), 404
 
     ventas = (
         Venta.query.join(Comprador)
@@ -244,6 +244,31 @@ def buscar_ventas_fechas():
             {
                 "message": "Se encontraron las ventas satisfactoriamente",
                 "ventas": data_venta,
+            }
+        ),
+        200,
+    )
+
+
+# READ
+@venta_scope.route("/buscar/<int:id_>", methods=["GET"])
+def buscar_ventas_comprador_id(id_):
+    """
+    La funcion buscasr_ventas_comprador_id, buscara todas las ventas que tenga un comprador apartir de su ID.
+
+    Return JSON Object confirmacndo o negando que exista ventas con el ID del comprador.
+    """
+    ventas = Venta.query.filter(Venta.comp_id.like(id_)).all()
+    if not ventas:
+        return (
+            jsonify({"message": "No se encontraron nota de pedido del comprador"}),
+            404,
+        )
+    return (
+        jsonify(
+            {
+                "message": "Se encontraron las notas de pedido del comprador",
+                "compras": ventas_schema.dump(ventas),
             }
         ),
         200,
