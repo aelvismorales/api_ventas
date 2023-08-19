@@ -127,8 +127,8 @@ def crear_compradores():
 
 
 # READ
-@comprador_scope.route("/buscar/<string:texto_dni>", methods=["GET"])
-def buscar_comprador(texto_dni):
+@comprador_scope.route("/buscar/<string:name>", methods=["GET"])
+def buscar_comprador(name):
     """
     La funcion buscar_comprador() recibe un string dni que se va a realizar la busqueda asi como una palabra clave " * "
     para retornar todos los compradores registrados.
@@ -138,16 +138,16 @@ def buscar_comprador(texto_dni):
     '
         Formato para buscar a un comprador:
         http://127.0.0.1:5000/comprador/buscar/75568362
-        {url/comprador/buscar/dni_comprador}
+        {url/comprador/buscar/name}
         {url/comprador/buscar/*} // Devuelve todos los compradores registrados
     '
     """
-    busqueda = texto_dni.replace("_", " ").upper()
+    busqueda = name.replace("_", " ").upper()
     if busqueda == "*":
         compradores = Comprador.query.all()
     else:
         compradores = Comprador.query.filter(
-            Comprador.com_dni.like("%" + busqueda + "%")
+            Comprador.com_name.like("%" + busqueda + "%")
         ).all()
     if len(compradores) > 0:
         result = compradores_squema.dump(compradores)
@@ -161,7 +161,10 @@ def buscar_comprador(texto_dni):
             200,
         )
     else:
-        return jsonify({"message": "No se encontro al comprador", "comprador": {}}), 404
+        return (
+            jsonify({"message": "No se encontro al comprador", "compradores": []}),
+            404,
+        )
 
 
 # UPDATE

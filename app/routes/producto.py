@@ -145,6 +145,7 @@ def buscar_producto(texto):
          {url/producto/nombre_del_producto}
     '
     """
+
     busqueda = texto.replace("_", " ").upper()
     productos = Producto.query.filter(Producto.pr_name.like("%" + busqueda + "%")).all()
     if len(productos) > 0:
@@ -154,7 +155,10 @@ def buscar_producto(texto):
             200,
         )
     else:
-        return jsonify({"message": "No se encontraron productos", "productos": {}}), 404
+        return (
+            jsonify({"message": "No se encontraron productos", "productos": []}),
+            404,
+        )
 
 
 # READ
@@ -210,7 +214,7 @@ def actualizar(id_):
             404,
         )
     producto_equivalente = Producto(
-        " ".join(request.json["pr_name"].upper().strip().spit()),
+        " ".join(request.json["pr_name"].upper().strip().split()),
         " ".join(request.json["pr_tipo"].upper().strip().split()),
         request.json["pr_bprice"],
         request.json["pr_sprice"],
