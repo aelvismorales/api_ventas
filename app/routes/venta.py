@@ -69,6 +69,7 @@ def crear_venta():
         ven_address=" ".join(data.get("com_address", "").strip().upper().split()),
     )
     db.session.add(venta)
+    db.session.commit()
     total_sale = Decimal(0.0).quantize(Decimal("1e-{0}".format(2)))
     try:
         for producto_data in productos:
@@ -79,18 +80,22 @@ def crear_venta():
             descuento = Decimal(producto_data.get("discount", 0)).quantize(
                 Decimal("1e-{0}".format(2))
             )
+            pr_sprices = Decimal(producto_data.get("pr_sprice", 1)).quantize(
+                Decimal("1e-{0}".format(2))
+            )
 
-            producto = Producto.query.get(producto_id)
-            if not producto:
-                return jsonify(
-                    {"message": f"El producto con ID {producto_id} no se encuentra"}
-                )
-            total_sale += (producto.get_sprice() * cantidad) - descuento
+            # producto = Producto.query.get(producto_id)
+            # if not producto:
+            #    return jsonify(
+            #        {"message": f"El producto con ID {producto_id} no se encuentra"}
+            #    )
+            total_sale += (pr_sprices * cantidad) - descuento
             detalle = detalle_venta.insert().values(
                 ven_id=venta.ven_id,
                 pr_id=producto_id,
                 dv_quantity=cantidad,
                 dv_discount=descuento,
+                pr_sprice=pr_sprices,
             )
             db.session.execute(detalle)
 
@@ -123,7 +128,10 @@ def obtener_Venta(id_):
 
     detalles = (
         db.session.query(
-            Producto, detalle_venta.c.dv_quantity, detalle_venta.c.dv_discount
+            Producto,
+            detalle_venta.c.dv_quantity,
+            detalle_venta.c.dv_discount,
+            detalle_venta.c.pr_sprice,
         )
         .join(detalle_venta, Producto.pr_id == detalle_venta.c.pr_id)
         .filter(detalle_venta.c.ven_id == id_)
@@ -133,15 +141,17 @@ def obtener_Venta(id_):
         "ven_id": venta.get_ven_id(),
         "comp_name": venta.comprador.get_com_name(),
         "com_addresses": venta.comprador.get_com_address(),
+        "com_dni": venta.comprador.get_com_dni(),
+        "com_telefono": venta.comprador.get_com_telefono(),
         "ven_date": venta.get_date(),
         "ven_tipo": venta.get_ven_tipo(),
         "ven_total": venta.get_suma_total(),
         "productos": [],
     }
-    for producto, cantidad, descuento in detalles:
+    for producto, cantidad, descuento, sprice in detalles:
         producto_data = {
             "pr_name": producto.get_name(),
-            "pr_sprice": producto.get_sprice(),
+            "pr_sprice": sprice if sprice is not None else producto.get_sprice(),
             "dv_quantity": Decimal(cantidad).quantize(Decimal("1e-{0}".format(scale))),
             "dv_discount": Decimal(descuento).quantize(Decimal("1e-{0}".format(scale))),
         }
@@ -150,7 +160,7 @@ def obtener_Venta(id_):
 
 
 # READ
-@venta_scope.route("/buscar/<string:com_name>", methods=["GET"])
+@venta_scope.route("/buscar/nombre/<string:com_name>", methods=["GET"])
 def buscar_ventas(com_name):
     """
     La funcion buscar_ventas, buscara las ventas por nombre de la persona segun exista en la base de datos
@@ -175,7 +185,10 @@ def buscar_ventas(com_name):
     if not ventas:
         return (
             jsonify(
-                {"message": f"No se encontraron ventas para el comprador {busqueda}"}
+                {
+                    "message": f"No se encontraron ventas para el comprador {busqueda}",
+                    "compras": [],
+                }
             ),
             404,
         )
@@ -186,7 +199,7 @@ def buscar_ventas(com_name):
                 "ven_id": v.get_ven_id(),
                 "ven_date": v.get_date(),
                 "vent_tipo": v.get_ven_tipo(),
-                "comp_name ": v.comprador.get_com_name(),
+                "comp_name": v.comprador.get_com_name(),
                 "vent_total": v.get_suma_total(),
             }
         )
@@ -217,9 +230,10 @@ def buscar_ventas_fechas():
     """
     data = request.json
     fecha_inicio = data.get("fecha_inicio", datetime.now(timezone.utc).astimezone())
-    fecha_final = data.get(
-        "fecha_final", datetime.now(timezone.utc).astimezone() + timedelta(days=1)
-    )
+    fecha_final = data.get("fecha_final", datetime.now(timezone.utc).astimezone())
+    # fecha_final = data.get(
+    #   "fecha_final", datetime.now(timezone.utc).astimezone() + timedelta(days=1)
+    # )
     ventas = (
         Venta.query.filter(Venta.ven_date.between(fecha_inicio, fecha_final))
         .order_by(asc(Venta.ven_id))
@@ -232,18 +246,23 @@ def buscar_ventas_fechas():
                 "ven_id": v.get_ven_id(),
                 "ven_date": v.get_date(),
                 "vent_tipo": v.get_ven_tipo(),
-                "comp_name ": v.comprador.get_com_name(),
+                "comp_name": v.comprador.get_com_name(),
                 "vent_total": v.get_suma_total(),
             }
         )
     if ventas is None:
-        return jsonify({"message": "No se encontraron ventas en esta fecha"}), 404
+        return (
+            jsonify(
+                {"message": "No se encontraron ventas en esta fecha", "compras": []}
+            ),
+            404,
+        )
 
     return (
         jsonify(
             {
                 "message": "Se encontraron las ventas satisfactoriamente",
-                "ventas": data_venta,
+                "compras": data_venta,
             }
         ),
         200,
@@ -261,7 +280,12 @@ def buscar_ventas_comprador_id(id_):
     ventas = Venta.query.filter(Venta.comp_id.like(id_)).all()
     if not ventas:
         return (
-            jsonify({"message": "No se encontraron nota de pedido del comprador"}),
+            jsonify(
+                {
+                    "message": "No se encontraron nota de pedido del comprador",
+                    "compras": [],
+                }
+            ),
             404,
         )
     return (

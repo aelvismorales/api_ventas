@@ -81,6 +81,7 @@ detalle_venta = db.Table(
     db.Column("pr_id", db.Integer, db.ForeignKey("producto.pr_id")),
     db.Column("dv_quantity", db.Numeric(precision=10, scale=2)),
     db.Column("dv_discount", db.Numeric(precision=10, scale=2)),
+    db.Column("pr_sprice", db.Numeric(precision=10, scale=2), default=None),
 )
 
 
@@ -231,4 +232,12 @@ class Venta(db.Model):
 
 class VentaSquema(ma.SQLAlchemySchema):
     class Meta:
-        fields = ("ven_id", "ven_date", "ven_tipo", "comp_id", "ven_address")
+        fields = (
+            "ven_id",
+            "ven_date",
+            "ven_tipo",
+            "comp_id",
+            "ven_address",
+            "ven_total",
+        )
+        datetimeformat = "%d/%m/%Y"
