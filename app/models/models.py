@@ -190,6 +190,10 @@ class Venta(db.Model):
         lazy="dynamic",
     )
     ven_total = db.Column(db.Numeric(precision=10, scale=2), default=0.0)
+    ven_comment = db.Column(db.Text, default="")
+    ven_acuenta = db.Column(
+        db.Numeric(precision=10, scale=2), nullable=False, default=0.0
+    )
 
     def __init__(self, ven_tipo, comprador_id, ven_address="-"):
         self.ven_tipo = ven_tipo
@@ -225,6 +229,12 @@ class Venta(db.Model):
 
     def get_suma_total(self):
         return self.ven_total
+
+    def get_ven_comments(self):
+        return self.ven_comment
+
+    def get_acuenta(self):
+        return self.acuenta
 
     def set_ven_tipo(self, ven_tipo):
         self.ven_tipo = ven_tipo
