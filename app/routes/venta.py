@@ -45,13 +45,13 @@ def crear_venta():
     data = request.json
     ven_tipo = data.get("ven_tipo", "-")
     comp_name = " ".join(data.get("com_name", "VARIOS").strip().upper().split())
+    com_dni = data.get("com_dni", "")
     productos = data.get("productos", [])
     acuenta = data.get("acuenta", 0.0)
-    comprador = Comprador.query.filter_by(com_name=comp_name).first()
+    comprador = Comprador.query.filter_by(com_dni=com_dni).first()
     if comprador is None:
         com_address = " ".join(data.get("com_address", "").strip().upper().split())
         com_telefono = data.get("com_telefono", "")
-        com_dni = data.get("com_dni", "")
         comprador = Comprador(comp_name, com_address, com_telefono, com_dni)
         try:
             db.session.add(comprador)
@@ -378,6 +378,33 @@ def actualizar_venta(ven_id):
         venta.comprador.set_com_name(comp_name)
         db.session.commit()
         return jsonify({"message": "Venta actualizada exitosamente"}), 200
+    except Exception as e:
+        error = e.args[0]
+        db.session.rollback()
+        return (
+            jsonify({"message": "No se pudo actualizar la venta", "error": error}),
+            500,
+        )
+
+
+# UPDATE
+@venta_scope.route("/actualizar/venta_datos/<int:ven_id>", methods=["PUT"])
+def actualizar_datos(ven_id):
+    venta = Venta.query.get(ven_id)
+    if not venta:
+        return jsonify({"message": "No se encontro la venta"}), 404
+    data = request.json
+    ven_tipo = data.get("ven_tipo")
+    comp_name = data.get("comp_name")
+    acuenta = data.get("ven_acuenta")
+    comment = data.get("ven_comment")
+    try:
+        venta.ven_tipo = ven_tipo
+        venta.comprador.com_name = comp_name
+        venta.ven_acuenta = acuenta
+        venta.ven_comment = comment
+        db.session.commit()
+        return jsonify({"message": "Se actualizo correctamente la venta"}), 200
     except Exception as e:
         error = e.args[0]
         db.session.rollback()
