@@ -46,6 +46,7 @@ def crear_venta():
     ven_tipo = data.get("ven_tipo", "-")
     comp_name = " ".join(data.get("com_name", "VARIOS").strip().upper().split())
     productos = data.get("productos", [])
+    acuenta = data.get("acuenta", 0.0)
     comprador = Comprador.query.filter_by(com_name=comp_name).first()
     if comprador is None:
         com_address = " ".join(data.get("com_address", "").strip().upper().split())
@@ -100,6 +101,7 @@ def crear_venta():
             db.session.execute(detalle)
 
         venta.ven_total = total_sale
+        venta.ven_acuenta = acuenta
         db.session.commit()
 
         return jsonify({"message": "Venta creada exitosamente"}), 201
@@ -201,6 +203,8 @@ def buscar_ventas(com_name):
                 "vent_tipo": v.get_ven_tipo(),
                 "comp_name": v.comprador.get_com_name(),
                 "vent_total": v.get_suma_total(),
+                "ven_comment": v.get_comment(),
+                "ven_acuenta": v.get_acuenta(),
             }
         )
 
@@ -248,6 +252,8 @@ def buscar_ventas_fechas():
                 "vent_tipo": v.get_ven_tipo(),
                 "comp_name": v.comprador.get_com_name(),
                 "vent_total": v.get_suma_total(),
+                "ven_comment": v.get_comment(),
+                "ven_acuenta": v.get_acuenta(),
             }
         )
     if ventas is None:
@@ -379,6 +385,17 @@ def actualizar_venta(ven_id):
             jsonify({"message": "No se pudo actualizar la venta", "error": error}),
             500,
         )
+
+
+# UPDATE
+@venta_scope.route("/actualizar/anular/<int:id_>", methods=["PUT"])
+def actualizar_anular(id_):
+    venta = Venta.query.get(id_)
+    if not venta:
+        return jsonify({"message": "Venta no encontrada"}), 404
+    venta.ven_tipo = "ANULADO"
+    db.session.commit()
+    return jsonify({"message": "Venta actualizada correctamente"}), 200
 
 
 # DELETE
