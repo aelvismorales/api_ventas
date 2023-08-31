@@ -230,7 +230,7 @@ class Venta(db.Model):
     def get_suma_total(self):
         return self.ven_total
 
-    def get_ven_comments(self):
+    def get_comment(self):
         return self.ven_comment
 
     def get_acuenta(self):
@@ -249,5 +249,7 @@ class VentaSquema(ma.SQLAlchemySchema):
             "comp_id",
             "ven_address",
             "ven_total",
+            "ven_comment",
+            "ven_acuenta",
         )
         datetimeformat = "%d/%m/%Y"
