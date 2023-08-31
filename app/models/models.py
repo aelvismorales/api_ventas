@@ -234,7 +234,7 @@ class Venta(db.Model):
         return self.ven_comment
 
     def get_acuenta(self):
-        return self.acuenta
+        return self.ven_acuenta
 
     def set_ven_tipo(self, ven_tipo):
         self.ven_tipo = ven_tipo
