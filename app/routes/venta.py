@@ -104,7 +104,15 @@ def crear_venta():
         venta.ven_acuenta = acuenta
         db.session.commit()
 
-        return jsonify({"message": "Venta creada exitosamente"}), 201
+        return (
+            jsonify(
+                {
+                    "message": "Venta creada exitosamente",
+                    "venta": venta_schema.dump(venta),
+                }
+            ),
+            201,
+        )
     except Exception as ex:
         error = ex.args[0]
         db.session.rollback()
@@ -148,6 +156,7 @@ def obtener_Venta(id_):
         "ven_date": venta.get_date(),
         "ven_tipo": venta.get_ven_tipo(),
         "ven_total": venta.get_suma_total(),
+        "acuenta": venta.get_acuenta(),
         "productos": [],
     }
     for producto, cantidad, descuento, sprice in detalles:
@@ -220,7 +229,7 @@ def buscar_ventas(com_name):
 
 
 # READ
-@venta_scope.route("/buscar/fechas", methods=["GET", "POST"])
+@venta_scope.route("/buscar/fechas", methods=["GET"])
 def buscar_ventas_fechas():
     """
     Return Json Object con ventas del rango de fecha dado
