@@ -406,14 +406,19 @@ def actualizar_datos(ven_id):
         return jsonify({"message": "No se encontro la venta"}), 404
     data = request.json
     ven_tipo = data.get("ven_tipo")
+    ven_address = data.get("ven_address")
     comp_name = data.get("comp_name")
     acuenta = data.get("ven_acuenta")
     comment = data.get("ven_comment")
     try:
         venta.ven_tipo = ven_tipo
+        venta.ven_address = ven_address
         venta.comprador.com_name = comp_name
         venta.ven_acuenta = acuenta
         venta.ven_comment = comment
+        venta.ven_date_cancelacion = (
+            datetime.now(timezone.utc).astimezone().strftime("%d/%m/%Y")
+        )
         db.session.commit()
         return jsonify({"message": "Se actualizo correctamente la venta"}), 200
     except Exception as e:

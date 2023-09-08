@@ -238,6 +238,11 @@ class Venta(db.Model):
         return self.ven_acuenta
 
     def get_date_cancelacion(self):
+        if self.ven_date_cancelacion is None:
+            return None
+        if not isinstance(self.ven_date_cancelacion, datetime):
+            return None
+
         return self.ven_date_cancelacion.strftime("%d/%m/%Y")
 
     def set_ven_tipo(self, ven_tipo):
