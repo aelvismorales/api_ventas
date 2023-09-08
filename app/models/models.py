@@ -194,6 +194,7 @@ class Venta(db.Model):
     ven_acuenta = db.Column(
         db.Numeric(precision=10, scale=2), nullable=False, default=0.0
     )
+    ven_date_cancelacion = db.Column(db.DateTime, default=None)
 
     def __init__(self, ven_tipo, comprador_id, ven_address="-"):
         self.ven_tipo = ven_tipo
@@ -236,6 +237,9 @@ class Venta(db.Model):
     def get_acuenta(self):
         return self.ven_acuenta
 
+    def get_date_cancelacion(self):
+        return self.ven_date_cancelacion.strftime("%d/%m/%Y")
+
     def set_ven_tipo(self, ven_tipo):
         self.ven_tipo = ven_tipo
 
@@ -251,5 +255,6 @@ class VentaSquema(ma.SQLAlchemySchema):
             "ven_total",
             "ven_comment",
             "ven_acuenta",
+            "ven_date_cancelacion",
         )
         datetimeformat = "%d/%m/%Y"

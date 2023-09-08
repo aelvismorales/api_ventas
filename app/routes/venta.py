@@ -214,6 +214,7 @@ def buscar_ventas(com_name):
                 "vent_total": v.get_suma_total(),
                 "ven_comment": v.get_comment(),
                 "ven_acuenta": v.get_acuenta(),
+                "ven_date_cancelacion": v.get_date_cancelacion(),
             }
         )
 
@@ -229,7 +230,7 @@ def buscar_ventas(com_name):
 
 
 # READ
-@venta_scope.route("/buscar/fechas", methods=["GET"])
+@venta_scope.route("/buscar/fechas", methods=["GET", "POST"])
 def buscar_ventas_fechas():
     """
     Return Json Object con ventas del rango de fecha dado
@@ -263,6 +264,7 @@ def buscar_ventas_fechas():
                 "vent_total": v.get_suma_total(),
                 "ven_comment": v.get_comment(),
                 "ven_acuenta": v.get_acuenta(),
+                "ven_date_cancelacion": v.get_date_cancelacion(),
             }
         )
     if ventas is None:
