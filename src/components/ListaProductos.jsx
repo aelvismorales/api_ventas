@@ -21,46 +21,25 @@ export default function ListaProductos() {
   });
 
   return (
-    <div className="flex flex-row justify-between gap-6">
-      <div className="flex flex-col w-full">
-        <div className="overflow-x-auto sm:-mx-6 lg:-mx-8 ">
-          <div className="inline-block min-w-full py-2 sm:px-6 lg:px-8 ">
-            <div className="overflow-hidden ">
-              <table className="min-w-full text-left text-sm font-light">
-                <thead className="border-b font-medium dark:border-neutral-500">
-                  <tr>
-                    <th scope="col" className="px-6 py-4">
-                      #
-                    </th>
-                    <th scope="col" className="px-6 py-4">
-                      Tipo
-                    </th>
-                    <th scope="col" className="px-6 py-4">
-                      Producto
-                    </th>
-
-                    <th scope="col" className="px-6 py-4">
-                      Precio Compra
-                    </th>
-                    <th scope="col" className="px-6 py-4">
-                      Precio Venta
-                    </th>
-                    <th scope="col" className="px-6 py-4">
-                      Stock
-                    </th>
-                    <th scope="col" className=""></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {productos.map((producto) => (
-                    <ProductoCard key={producto.pr_id} producto={producto} />
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div className="max-h-full mx-1 overflow-x-auto overflow-y-auto max-lg:max-h-[450px]">
+      <table className="min-w-full text-center text-base font-light">
+        <thead className="border-b-2 dark:border-neutral-500 font-medium">
+          <tr className="text-gray-800 [&>th]:px-6 [&>th]:pb-4 [&>th]:uppercase">
+            <th scope="col">#</th>
+            <th scope="col">Tipo</th>
+            <th scope="col">Producto</th>
+            <th scope="col">Precio Compra</th>
+            <th scope="col">Precio Venta</th>
+            <th scope="col">Stock</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {productos.map((producto) => (
+            <ProductoCard key={producto.pr_id} producto={producto} />
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }

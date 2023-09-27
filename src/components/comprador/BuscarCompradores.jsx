@@ -1,7 +1,7 @@
-import { React, useContext } from "react";
-import { ProductContext } from "../context/ProductContext";
-function BuscarProductos() {
-  const { handleChangeSearchProduct } = useContext(ProductContext);
+import React, { useContext } from "react";
+import { CompradorContext } from "../../context/CompradorContext";
+function BuscarCompradores() {
+  const { handleChangeSearchComprador } = useContext(CompradorContext);
   return (
     <div className="relative w-4/6">
       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -20,11 +20,11 @@ function BuscarProductos() {
       <input
         type="text"
         className="pl-10 pr-4 py-2 h-12 border rounded-md w-full focus:outline-none focus:bg-white focus:ring focus:border-blue-400 ease-linear transition-all duration-150"
-        placeholder="Buscar Productos"
-        onChange={handleChangeSearchProduct}
+        placeholder="Buscar compradores"
+        onChange={handleChangeSearchComprador}
       ></input>
     </div>
   );
 }
 
-export default BuscarProductos;
+export default BuscarCompradores;
