@@ -219,6 +219,9 @@ class Venta(db.Model):
     def get_comp_id(self):
         return self.comp_id
 
+    def get_address(self):
+        return self.ven_address
+
     def get_ven_tipo(self):
         return self.ven_tipo
 

@@ -209,6 +209,7 @@ def buscar_ventas(com_name):
             {
                 "ven_id": v.get_ven_id(),
                 "ven_date": v.get_date(),
+                "ven_address": v.get_address(),
                 "vent_tipo": v.get_ven_tipo(),
                 "comp_name": v.comprador.get_com_name(),
                 "vent_total": v.get_suma_total(),
@@ -259,6 +260,7 @@ def buscar_ventas_fechas():
             {
                 "ven_id": v.get_ven_id(),
                 "ven_date": v.get_date(),
+                "ven_address": v.get_address(),
                 "vent_tipo": v.get_ven_tipo(),
                 "comp_name": v.comprador.get_com_name(),
                 "vent_total": v.get_suma_total(),
@@ -410,15 +412,14 @@ def actualizar_datos(ven_id):
     comp_name = data.get("comp_name")
     acuenta = data.get("ven_acuenta")
     comment = data.get("ven_comment")
+    ven_date_cancelacion = data.get("ven_date_cancelacion")
     try:
         venta.ven_tipo = ven_tipo
         venta.ven_address = ven_address
         venta.comprador.com_name = comp_name
         venta.ven_acuenta = acuenta
         venta.ven_comment = comment
-        venta.ven_date_cancelacion = (
-            datetime.now(timezone.utc).astimezone().strftime("%d/%m/%Y")
-        )
+        venta.ven_date_cancelacion = ven_date_cancelacion
         db.session.commit()
         return jsonify({"message": "Se actualizo correctamente la venta"}), 200
     except Exception as e:
